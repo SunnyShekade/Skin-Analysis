@@ -22,38 +22,58 @@ def analyze_skin():
         return jsonify({'error': 'Uploaded file is not an image'}), 400
 
     try:
-        skin_metrics = your_cnn_model.analyze(image)  # Process the image with your model
+        result = your_cnn_model.analyze(image)  # Process the image with your model
     except Exception as e:
         logging.error(f'Error analyzing skin: {str(e)}')
         return jsonify({'error': str(e)}), 500  # Return error if analysis fails
 
-    return jsonify(skin_metrics)
+    if not result['living']:
+        return jsonify({'message': 'Non-human/non-living entity detected, no skin analysis available.'}), 200
+
+    skin_metrics = result.get('skinMetrics', None)
+    if skin_metrics is None:
+        return jsonify({'error': 'Skin metrics missing in analysis result'}), 500
+
+    # Check for required keys in skin_metrics
+    required_keys = ['tone', 'acne_level', 'blackheads', 'dark_circles', 'skin_type', 'hair_quality', 'hydration_level']
+    for key in required_keys:
+        if key not in skin_metrics:
+            return jsonify({'error': f'Missing key in skin metrics: {key}'}), 500
 
     # Return a detailed JSON response with all skin metrics
     return jsonify({
-        'skinTone': skin_metrics['tone'][0],  # Label
-        'skinTonePercentage': f"{skin_metrics['tone'][1]:.2f}%",  # Percentage formatted
-        'acneLevel': skin_metrics['acne_level'][0],  # Label
-        'acneLevelPercentage': f"{skin_metrics['acne_level'][1]:.2f}%",  # Percentage formatted
-        'blackheads': skin_metrics['blackheads'][0],  # Label
-        'blackheadsPercentage': f"{skin_metrics['blackheads'][1]:.2f}%",  # Percentage formatted
-        'darkCircles': skin_metrics['dark_circles'][0],  # Label
-        'darkCirclesPercentage': f"{skin_metrics['dark_circles'][1]:.2f}%",  # Percentage formatted
-        'skinType': skin_metrics['skin_type'][0],  # Label
-        'skinTypePercentage': f"{skin_metrics['skin_type'][1]:.2f}%",  # Percentage formatted
-        'hairQuality': skin_metrics['hair_quality'][0],  # Label
-        'hairQualityPercentage': f"{skin_metrics['hair_quality'][1]:.2f}%",  # Percentage formatted
-        'hydrationLevel': skin_metrics['hydration_level'][0],  # Label
-        'hydrationLevelPercentage': f"{skin_metrics['hydration_level'][1]:.2f}%",  # Percentage formatted
-        'sensitivity': skin_metrics['sensitivity'][0],  # Label
-        'sensitivityPercentage': f"{skin_metrics['sensitivity'][1]:.2f}%",  # Percentage formatted
-        'wrinkles': skin_metrics['wrinkles'][0],  # Label
-        'wrinklesPercentage': f"{skin_metrics['wrinkles'][1]:.2f}%",  # Percentage formatted
-        'poreSize': skin_metrics['pore_size'][0],  # Label
-        'poreSizePercentage': f"{skin_metrics['pore_size'][1]:.2f}%",  # Percentage formatted
-        'recommendedProducts': skin_metrics.get('recommendedProducts', [])
-    })
+    'skinMetrics': {
+        'skinTone': {
+            'label': skin_metrics['tone'][0],  # Label
+            'percentage': f"{skin_metrics['tone'][1]:.4f}"  # Format as percentage with 4 decimal places
+        },
+        'acneLevel': {
+            'label': skin_metrics['acne_level'][0],  # Label
+            'percentage': f"{skin_metrics['acne_level'][1]:.4f}"  # Format as percentage with 4 decimal places
+        },
+        'blackheads': {
+            'label': skin_metrics['blackheads'][0],  # Label
+            'percentage': f"{skin_metrics['blackheads'][1]:.4f}"  # Format as percentage with 4 decimal places
+        },
+        'darkCircles': {
+            'label': skin_metrics['dark_circles'][0],  # Label
+            'percentage': f"{skin_metrics['dark_circles'][1]:.4f}"  # Format as percentage with 4 decimal places
+        },
+        'skinType': {
+            'label': skin_metrics['skin_type'][0],  # Label
+            'percentage': f"{skin_metrics['skin_type'][1]:.4f}"  # Format as percentage with 4 decimal places
+        },
+        'hairQuality': {
+            'label': skin_metrics['hair_quality'][0],  # Label
+            'percentage': f"{skin_metrics['hair_quality'][1]:.4f}"  # Format as percentage with 4 decimal places
+        },
+        'hydrationLevel': {
+            'label': skin_metrics['hydration_level'][0],  # Label
+            'percentage': f"{skin_metrics['hydration_level'][1]:.4f}"  # Format as percentage with 4 decimal places
+        }
+    }
+})
+
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
