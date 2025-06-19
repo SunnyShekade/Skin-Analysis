@@ -80,3 +80,21 @@ document.getElementById('skinAnalysisForm').addEventListener('submit', function(
         alert('An error occurred while analyzing the skin. Please try again.');
     });
 });
+
+// ✅ Attach chatbot iframe loader logic
+document.getElementById('sendMessage').addEventListener('click', function () {
+    const chatFrame = document.getElementById('chatboxFrame');
+    const botIframe = document.getElementById('botIframe');
+
+    // Load the Botpress public chatbot URL inside the iframe
+    botIframe.src = "https://cdn.botpress.cloud/webchat/v2.4/shareable.html?configUrl=https://files.bpcontent.cloud/2025/06/03/14/20250603141923-4U6QBKVW.json";
+
+    // Show the chat frame
+    chatFrame.style.display = 'block';
+
+    // Disable send button to prevent reloading
+    document.getElementById('sendMessage').disabled = true;
+
+    // Hide the user input field
+    document.getElementById('userMessage').style.display = 'none';
+});
