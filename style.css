@@ -132,3 +132,36 @@ a:hover {
     margin-top: 10px;
     max-width: 200px;
 }
+
+.btn-success {
+    background-color: green; /* Change to your desired color */
+    color: white; /* Text color */
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-success:hover {
+    background-color: darkgreen; /* Darker shade on hover */
+}
+
+#bp-web-widget {
+    bottom: 100px !important;
+    right: 40px !important;
+  }
+  
+  #chatbotContainer {
+    width: 600px;
+    height: 400px;
+    margin: 20px auto 0 auto;  /* 20px top margin, centered horizontally */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white; /* Optional: set background for contrast */
+    color: black; /* Optional: set text color inside chatbot */
+}
+  
